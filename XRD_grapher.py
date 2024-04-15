@@ -14,7 +14,7 @@ import matplotlib.pylab as pylab #for qol features, in this case text size manip
 #Make sure to replace my file path with your own.
 
 def XRD_grapher(filenames,title,xlimits,ylimits,txt,legend,gridlines,xlabel,ylabel,xcolumn,
-                   ycolumn,cutoff,const): #txt is True if values are separated by ' ' and False if separated by ','
+                   ycolumn,cutoff,const,d_values): #txt is True if values are separated by ' ' and False if separated by ','
     #set title to None if you do not want a title
     #xlimits and ylimits set custom limits. Set to None if you want autoscaling.
     #legend is True if there is a legend.
@@ -24,6 +24,8 @@ def XRD_grapher(filenames,title,xlimits,ylimits,txt,legend,gridlines,xlabel,ylab
     #cutoff cuts off at an index, not a value
     #const is a normalizing constant for the y axis
     #multiple files can be plotted on top of each other (up to 7). filenames is an array-type object
+    # if d_values is True, the x axis will be plotted as d values in nm using Cu Kalpha wavelength (0.15418 nm). If d_values
+    #is False, XRD spectra will be plotted as 2 theta vs intensity
     
     #sample input: XRD_grapher(['iron oxide sample 1 test 2'],None,None,None,False,False,False,'$%s$'%'2 \\theta','intensity',0,1,None,1)
 
@@ -62,7 +64,7 @@ def XRD_grapher(filenames,title,xlimits,ylimits,txt,legend,gridlines,xlabel,ylab
 
     while(i < len(filenames)):
         if txt == False:
-            datalistX[i],datalistY[i]=np.loadtxt(fname="C:/Users/isaac/OneDrive/Documents/Ironmaking Project/XRD/" + filenames[i] + ".txt", skiprows=146, unpack=True,delimiter=',',
+            datalistX[i],datalistY[i]=np.loadtxt(fname="C:/Users/isaac/OneDrive/Documents/Ironmaking Project/XRD/4_1 solution/" + filenames[i] + ".txt", skiprows=146, unpack=True,delimiter=',',
                                                      usecols=(xcolumn,ycolumn))
 
         elif txt == True:
@@ -72,7 +74,12 @@ def XRD_grapher(filenames,title,xlimits,ylimits,txt,legend,gridlines,xlabel,ylab
             #you might have to customize skiprows for specific files
         if cutoff == None:
             cutoff = len(datalistX[i])
-        ax.plot(datalistX[i][0:cutoff]/const, (datalistY[i][0:cutoff]), '.', color=colorlist[i],label=filenames[i])
+        
+        if d_values == False:
+            ax.plot(datalistX[i][0:cutoff], (datalistY[i][0:cutoff])/const, '.', color=colorlist[i],label=filenames[i])
+        elif d_values == True:
+            dValueArray = ((2*np.sin(0.0174532925199433*(datalistX[i][0:cutoff]/2)))**(-1))*0.15418  #Bragg law
+            ax.plot(dValueArray, (datalistY[i][0:cutoff])/const, '.', color=colorlist[i],label=filenames[i])
         
         
         i = i + 1
