@@ -16,7 +16,8 @@ import matplotlib.pylab as pylab #for qol features, in this case text size manip
 
 def CV_grapher(const #Normalizing constant to turn current input into current density output if desired
                ,filenames,title,xlimits,yunits,ylimits,txt,currentDependence,gridlines): #txt is true if dealing with a txt file, and false if dealing with a csv
-#currentDependence: True if current is on the y axis.    
+#currentDependence: True if current is on the y axis.   
+#sample input: CV_grapher(1,['blank_CV'],None,None,'(mA)',None,True,True,False)
 
     fig = plt.figure(figsize=(8, 6))    # Create a graph 'fig' which has 4 inches in width and 6 inches in height.
     ax = fig.add_subplot(111)           # Create a subplot 'ax' in the figure 'fig'. 
