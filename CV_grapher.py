@@ -15,7 +15,7 @@ import matplotlib.pylab as pylab #for qol features, in this case text size manip
 #same general layout as XRD grapher. Make sure to replace my file path with your own.
 
 def CV_grapher(const #Normalizing constant to turn current input into current density output if desired
-               ,filenames,title,xlimits,yunits,ylimits,txt,currentDependence,gridlines): #txt is true if dealing with a txt file, and false if dealing with a csv
+               ,filenames,title,xlimits,yunits,ylimits,txt,currentDependence,gridlines,cycle): #txt is true if dealing with a txt file, and false if dealing with a csv
 #currentDependence: True if current is on the y axis.   
 #sample input: CV_grapher(1,['blank_CV'],None,None,'(mA)',None,True,True,False)
 
@@ -31,7 +31,8 @@ def CV_grapher(const #Normalizing constant to turn current input into current de
     params={'axes.labelsize': 'xx-large',   #set text size
          'axes.titlesize':'xx-large',
          'xtick.labelsize':'xx-large',
-         'ytick.labelsize':'xx-large'}
+         'ytick.labelsize':'xx-large',
+         'legend.fontsize':'xx-large'}
     pylab.rcParams.update(params)
     
     X1 = []
@@ -48,9 +49,17 @@ def CV_grapher(const #Normalizing constant to turn current input into current de
     Y5 = []
     Y6 = []
     Y7 = []
+    C1 = []
+    C2 = []
+    C3 = []
+    C4 = []
+    C5 = []
+    C6 = []
+    C7 = []
     colorlist=['g','b','r','y','k','c','m']
     datalistX=[X1,X2,X3,X4,X5,X6,X7]
     datalistY=[Y1,Y2,Y3,Y4,Y5,Y6,Y7]
+    cycles=[C1,C2,C3,C4,C5,C6,C7]
     i=0
     while(i < len(filenames)):
         if txt == False:
@@ -63,12 +72,28 @@ def CV_grapher(const #Normalizing constant to turn current input into current de
                      # Read data from a file scan1.csv and skip the first row.
         elif txt == True:
             if currentDependence == True:
-                datalistX[i],datalistY[i]=np.loadtxt(fname="C:/Users/isaac/OneDrive/Documents/Electrochemistry Program/Echem Project/Data/txt files/CVs/" + filenames[i] + ".txt", skiprows=1, unpack=True,
-                                                     usecols=(0,1))
+                datalistX[i],datalistY[i],cycles[i]=np.loadtxt(fname=r"C:\Users\isaac\OneDrive\Documents\aluminum substituted hematite reduction project\Electrochemical tests\txt files"+"/" + filenames[i] + ".txt", skiprows=1, unpack=True,
+                                                     usecols=(0,1,2))
             else:
                 datalistY[i],datalistX[i]=np.loadtxt(fname="C:/Users/isaac/OneDrive/Documents/Electrochemistry Program/Echem Project/Data/txt files/Week 3/" + filenames[i] + ".txt", skiprows=1, unpack=True,
                                                      usecols=(0,1))
-        ax.plot(datalistX[i], datalistY[i]/const, '.', color=colorlist[i],label=filenames[i])
+                
+        i2 = 0
+        disposableX = []
+        disposableY = []
+        if cycle == None:
+            disposableX = datalistX[i]
+            disposableY = datalistY[i]
+        else:
+            while(i2<len(datalistX[i])): #cycle selector functionality
+                if cycles[i][i2] == cycle: #cycles[i][i2] < cycle+0.5 and cycles[i][i2]>cycle-0.5:
+                    disposableX = np.append(disposableX,datalistX[i][i2])
+                    disposableY = np.append(disposableY,datalistY[i][i2])
+               
+                i2 = i2 + 1
+        #return disposableX
+                
+        ax.plot(disposableX, disposableY/const, '.', color=colorlist[i],label=filenames[i])
         i = i + 1
         #skiprows in np.loadtxt skips the number of rows specified. You may have to customize this to your own file.
         #you also might need to change usecols. The arrays to be read into correspond respectively to the inputs in usecols
