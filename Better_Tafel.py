@@ -94,6 +94,10 @@ def Tafel_Grapher_slopes_vs_voltage(const #Normalizing constant to turn current 
         #print(df)
         ax.plot(df['overpotential_smooth'],df['Tafel slope (mV/dec)'], '.', color=colorlist[i],
                 label=filenames[i])
+        ax.set_ylabel('Tafel slope (mV/dec)', color = 'green')
+        ax2 = ax.twinx()
+        ax2.plot(df['overpotential_smooth'],df['logi'], '.', color=colorlist[i+1])
+        ax2.set_ylabel('logi (logA)',color = 'blue')
         """ax.plot(df['overpotential_smooth'],df['logi'], '.', color=colorlist[i],
                 label=filenames[i])""" #normal Tafel
         
