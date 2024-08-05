@@ -16,7 +16,7 @@ import matplotlib.pylab as pylab #for qol features, in this case text size manip
 
 # Returns Tafel slope as a function of overpotential
 def Tafel_Grapher_slopes_vs_voltage(const #Normalizing constant to turn current input into current density output if desired
-               ,filenames,title,xlimits,ylimits,Ru,vs,legend): #Ru in Ohms, Y data in mA, vs is correction for overpotential
+               ,filenames,title,xlimits,ylimits,Ru,vs,legend,window_size): #Ru in Ohms, Y data in mA, vs is correction for overpotential
     fig = plt.figure(figsize=(8, 6))    # Create a graph 'fig' which has 4 inches in width and 6 inches in height.
     ax = fig.add_subplot(111)           # Create a subplot 'ax' in the figure 'fig'. 
     ax.set_ylabel('Tafel slope (mV/dec)')   # set the label of the x-axis
@@ -65,7 +65,7 @@ def Tafel_Grapher_slopes_vs_voltage(const #Normalizing constant to turn current 
         print(V_corrected[i])
         print(logi[i])
         #smooth
-        window_size = 10
+        #window_size = 10
         
         logipd = pd.Series(logi[i])
         V_correctedpd = pd.Series(V_corrected[i])  
