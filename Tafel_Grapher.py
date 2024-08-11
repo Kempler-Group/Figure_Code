@@ -16,7 +16,8 @@ import matplotlib.pylab as pylab #for qol features, in this case text size manip
 
 
 def Tafel_Grapher(const #Normalizing constant to turn current input into current density output if desired
-               ,filenames,title,xlimits,yunits,ylimits,Ru,vs,pboundsV,pboundsj): #Ru in Ohms, Y data in mA, vs is correction for overpotential
+               ,filenames,title,xlimits,yunits,ylimits,Ru,vs,pboundsV,pboundsj,legend,temp): #Ru in Ohms, Y data in mA, vs is correction for overpotential
+#temp in K
     fig = plt.figure(figsize=(8, 6))    # Create a graph 'fig' which has 4 inches in width and 6 inches in height.
     ax = fig.add_subplot(111)           # Create a subplot 'ax' in the figure 'fig'. 
     ax.set_ylabel('Overpotential (V)')   # set the label of the x-axis
@@ -42,7 +43,7 @@ def Tafel_Grapher(const #Normalizing constant to turn current input into current
     datalistY=[Y1,Y2,Y3,Y4]
     i=0
     while(i < len(filenames)):
-        datalistX[i],datalistY[i]=np.loadtxt(fname=r"C:\Users\isaac\OneDrive\Documents\aluminum substituted hematite reduction project\Electrochemical tests\txt files\5_1 and 5_2 CVs"+"/" + filenames[i]+'.txt', #delimiter = ',', 
+        datalistX[i],datalistY[i]=np.loadtxt(fname=r"C:\Users\isaac\OneDrive\Documents\aluminum substituted hematite reduction project\Electrochemical tests\custom_txt\8_5 Vcorrected"+"/" + filenames[i], #delimiter = ',', 
                                              skiprows=1, unpack=True,
                    usecols=(0,1))
                      # Read data from a file scan1.csv and skip the first row.  
@@ -76,7 +77,7 @@ def Tafel_Grapher(const #Normalizing constant to turn current input into current
     y = []
     
     while(i < len(V_corrected[0])):
-        if V_corrected[0][i] > pboundsV[0] and V_corrected[0][i] < pboundsV[1]:
+        if V_corrected[0][i] > pboundsV[0] and V_corrected[0][i] < pboundsV[1] and V_corrected[0][i+1]<V_corrected[0][i]:
             if pboundsj == None:
                 y = np.append(y,V_corrected[0][i])
                 x = np.append(x,logi[0][i])
@@ -86,8 +87,9 @@ def Tafel_Grapher(const #Normalizing constant to turn current input into current
         i = i + 1
     
     z = np.polyfit(x,y,1)
-    
-    xp = np.linspace(-10,10,10000)
+    if xlimits == None:
+        xlimits = [np.min(logi[0]),np.max(logi[0])]
+    xp = np.linspace(xlimits[0],xlimits[1],10000)
     
     zp = xp*z[0] + z[1]
     
@@ -99,11 +101,17 @@ def Tafel_Grapher(const #Normalizing constant to turn current input into current
         ax.set_ylim(ylimits[0],ylimits[1])   # set the range of the y-axis
     #ax.set_xlabel('Potential, V')   # set the label of the x-axis
     #ax.set_ylabel('Current, mA/cm^2') # set the label of the y-axis
-    ax.legend(loc='lower right')       # place the legend at the 'upper left'
+    if legend ==True:
+        ax.legend(loc='lower right')       # place the legend at the 'upper left'
     ax.xaxis.set_minor_locator(MultipleLocator(10))   # add minor ticks for the x-axis
     ax.yaxis.set_minor_locator(AutoMinorLocator())    # add minor ticks for the y-axis
     ax.xaxis.grid(True, which='both') # add grids to the x-axis for both major and minor ticks
     ax.set_title(title)
 
     plt.show()   # display 'ax'
-    return z
+    print("Tafel slope: "+str(z[0])+"V/dec")
+    print("Tafel intercept: " +str(z[1]))
+    alpha = (8.3*temp)/(2*z[0]*96485)
+    i0 = np.exp(-(z[1]*alpha*96485)/(8.3*temp))
+    print("exchange current "+yunits+":"+str(i0))
+    print("transfer coefficient:" + str(alpha))
